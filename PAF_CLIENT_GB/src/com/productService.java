@@ -19,17 +19,17 @@ public class productService {
 	@Path("/")
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	@Produces(MediaType.TEXT_HTML)
-	public String readItems()
+	public String readProducts()
 	 {
 
-	 return Obj.readItems();
+	 return Obj.readProducts();
 	 }
 
 	@POST
 	@Path("/")
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	@Produces(MediaType.TEXT_PLAIN)
-	public String insertItem(@FormParam("projectID") Integer projID,
+	public String insertItem(@FormParam("projID") Integer projID,
 	 @FormParam("projName") String projName,
 	 @FormParam("description") String description,
 	 @FormParam("area") String area,
@@ -67,13 +67,13 @@ public class productService {
 	@Path("/")
 	@Consumes(MediaType.APPLICATION_XML)
 	@Produces(MediaType.TEXT_PLAIN)
-	public String deleteItem(String proj)
+	public String deleteProduct(String proj)
 	{
 	//Convert the input string to an XML document
 	 Document doc = Jsoup.parse(proj, "", Parser.xmlParser());
 
 	 String projID = doc.select("projID").text();
-	 String output = Obj.deleteItem(projID);
+	 String output = Obj.deleteProduct(projID);
 	return output;
 	}
 
