@@ -17,7 +17,7 @@ public class product {
 		{e.printStackTrace();}
 		return con;
 	}
-
+//insert===============================================
 	public String insertproductdetails(Integer projID, String projName, String description, String area, String resName, String resID, float price)
 	{
 		String output = "";
@@ -27,9 +27,10 @@ public class product {
 			if (con == null)
 			{return "Error while connecting to the database for inserting."; }
 			// create a prepared statement
+			
 			String query = "INSERT INTO product (projID, projName, description, area, resID, resName, price) VALUES (?, ?, ?, ?, ?, ?, ?)";
 			PreparedStatement preparedStmt = con.prepareStatement(query);
-
+//
 			preparedStmt.setInt(1, projID);
 			preparedStmt.setString(2, projName);
 			preparedStmt.setString(3, description);
@@ -41,15 +42,19 @@ public class product {
 
 			preparedStmt.execute();
 			con.close();
-			output = "Inserted successfully";
+			
+			 String newProduct = readProducts(); 
+		        output = "{\"status\":\"success\", \"data\": \"" + newProduct + "\"}"; 
 		}
 		catch (Exception e)
 		{
-			output = "Error while inserting the product.";
-			System.err.println(e.getMessage());
+			output = "{\"status\":\"error\", \"data\":  \"Error while inserting the Product details.\"}";
+	        System.err.println(e.getMessage());
 		}
 		return output;
 	}
+	
+	
 	public String readProducts()
 	{
 		String output = "";
@@ -86,18 +91,18 @@ public class product {
 				String price = String.valueOf(rs.getFloat("price"));
 
 				 output += "<tr><td><input id='hididUpdate' name='hididUpdate' type='hidden' value='" + projID + "'>"
-	            		 + projName + "</td>";
+						 + projID + "</td>";
+				 output += "<td>" + projName + "</td>";
 				
 				output += "<td>" + description + "</td>";
 				output += "<td>" + area + "</td>";
 				output += "<td>" + resID + "</td>";
 				output += "<td>" + resName + "</td>";
 				output += "<td>" + price + "</td>";
-				// buttons
-				 output +="<td><input name='btnUpdate' type='button' value='Update' class=' btnUpdate btn btn-secondary'></td>"
-	        			 + "<td><form method='post' action='products.jsp'>"
-	        			 +"<input name='btnRemove' type='submit' value='Remove' class='btn btn-danger'>"
-	        			 + "<input name='hididDelete' type='hidden' value='" + projID + "'></form></td></tr>";
+				 // buttons
+		           output +="<td><input name='btnUpdate' type='button' value='Update' class=' btnUpdate btn btn-secondary' data-projID='" + projID + "'></td>"
+		
+		        			 + "<td><input name='btnRemove' type='button' value='Remove' class='btnRemove btn btn-danger' data-projID='" + projID + "'></td></tr>";
 			}
 			con.close();
 
@@ -110,7 +115,9 @@ public class product {
 		}
 		return output;
 	}
-	public String updateproductdetails(Integer projID, String projName, String description, String area, String resName, String resID, float price)
+	
+	
+	public String updateproductdetails(String projID, String projName, String description, String area, String resName, String resID, float price)
 
 	{
 		String output = "";
@@ -130,19 +137,25 @@ public class product {
 			preparedStmt.setString(4, resName);
 			preparedStmt.setString(5, resID);
 			preparedStmt.setFloat(6, price);
-			preparedStmt.setInt(7, projID);
+			preparedStmt.setString(7, projID);
 			// execute the statement
 			preparedStmt.execute();
 			con.close();
-			output = "Updated successfully";
+
+
+
+			 String newProduct = readProducts(); 
+		        output = "{\"status\":\"success\", \"data\": \"" + newProduct + "\"}"; 
 		}
 		catch (Exception e)
 		{
-			output = "Error while updating the item.";
-			System.err.println(e.getMessage());
+			output = "{\"status\":\"error\", \"data\":  \"Error while update the Product details.\"}";
+	        System.err.println(e.getMessage());
 		}
 		return output;
 	}
+	
+	
 	public String deleteProduct(String projID)
 	{
 		String output = "";
@@ -155,16 +168,18 @@ public class product {
 			String query = "DELETE FROM product  WHERE projID=?";
 			PreparedStatement preparedStmt = con.prepareStatement(query);
 			// binding values
-			preparedStmt.setInt(1, Integer.parseInt(projID));
+			preparedStmt.setString(1, projID);
 			// execute the statement
 			preparedStmt.execute();
 			con.close();
-			output = "Deleted successfully";
+
+			 String newProduct = readProducts(); 
+		        output = "{\"status\":\"success\", \"data\": \"" + newProduct + "\"}"; 
 		}
 		catch (Exception e)
 		{
-			output = "Error while deleting the item.";
-			System.err.println(e.getMessage());
+			output = "{\"status\":\"error\", \"data\":  \"Error while delete the Product details.\"}";
+	        System.err.println(e.getMessage());
 		}
 		return output;
 	}

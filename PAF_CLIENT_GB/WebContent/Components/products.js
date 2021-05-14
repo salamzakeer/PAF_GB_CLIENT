@@ -17,7 +17,7 @@ $(document).on("click", "#btnSave", function(event) {
 
 	 
 	// Form validation-------------------
-	 var status = validateResearcherForm(); 
+	 var status = validateProductForm(); 
 	 if (status != true) 
 	  { 
 	  $("#alertError").text(status); 
@@ -26,14 +26,54 @@ $(document).on("click", "#btnSave", function(event) {
 	  }
 	 
 	// If valid-------------------------
-	 $("#formProduct").submit();
+	
+		var type = ($("#hididSave").val() == "") ? "POST" : "PUT";
+
+	$.ajax({
+		url : "productAPI",
+		type : type,
+		data : $("#formProduct").serialize(),
+		dataType : "text",
+		complete : function(response, status) {
+			onProductSaveComplete(response.responseText, status);
+		}
+	});
+
 });
+function onProductSaveComplete(response, status) {
+	if (status == "success") {
+
+		var resultSet = JSON.parse(response);
+
+		if (resultSet.status.trim() == "success") {
+
+			$("#alertSuccess").text("Product details successfully saved.");
+			$("#alertSuccess").show();
+
+			$("#divProductGrid").html(resultSet.data);
+
+		} else if (resultSet.status.trim() == "error") {
+			$("#alertError").text(resultSet.data);
+			$("#alertError").show();
+		}
+
+	} else if (status == "error") {
+		$("#alertError").text("Error while saving.");
+		$("#alertError").show();
+	} else {
+		$("#alertError").text("Unknown error while saving..");
+		$("#alertError").show();
+	}
+
+	$("#hididSave").val("");
+	$("#formProduct")[0].reset();
+}
 
 
 //UPDATE==========================================
 $(document).on("click", ".btnUpdate", function(event) 
 { 
- $("#hididSave").val($(this).closest("tr").find('#hididUpdate').val()); 
+ $("#hididSave").val($(this).data("projID")); 
   //projID, projName, description, area, resName, resID, price
  $("#projID").val($(this).closest("tr").find('td:eq(0)').text()); 
  $("#projName").val($(this).closest("tr").find('td:eq(1)').text()); 
@@ -46,7 +86,44 @@ $("#price").val($(this).closest("tr").find('td:eq(6)').price());
 
 });
 
+$(document).on("click", ".btnRemove", function(event) {
+	$.ajax({
+		url : "productAPI",
+		type : "DELETE",
+		data : "projID=" + $(this).data("projID"),
+		dataType : "text",
+		complete : function(response, status) {
+			onProductDeleteComplete(response.responseText, status);
+		}
+	});
+});
 
+function onProductDeleteComplete(response, status)
+{ 
+	if (status == "success") 
+ { 
+			var resultSet = JSON.parse(response); 
+			if (resultSet.status.trim() == "success") 
+			{ 
+				$("#alertSuccess").text("Product details successfully deleted."); 
+				$("#alertSuccess").show(); 
+				
+				$("#divProductGrid").html(resultSet.data); 
+			} else if (resultSet.status.trim() == "error") 
+			{ 
+				$("#alertError").text(resultSet.data); 
+				$("#alertError").show(); 
+			} 
+ 	} else if (status == "error") 
+ 	{ 
+ 		$("#alertError").text("Error while deleting."); 
+ 		$("#alertError").show(); 
+ 	} else
+	{ 
+ 		$("#alertError").text("Unknown error while deleting.."); 
+ 		$("#alertError").show(); 
+	} 
+}
 
 
 
@@ -88,19 +165,3 @@ return "Insert price.";
 
 return true; 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-/**
- * 
- */

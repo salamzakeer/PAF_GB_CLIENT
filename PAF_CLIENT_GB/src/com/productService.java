@@ -51,7 +51,7 @@ public class productService {
 	//Convert the input string to a JSON object
 	 JsonObject Object = new JsonParser().parse(proj).getAsJsonObject();
 	//Read the values from the JSON object
-	 Integer projID = Object.get("projID").getAsInt();
+	 String projID = Object.get("projID").getAsString();
 	 String projName = Object.get("projName").getAsString();
 	 String description = Object.get("description").getAsString();
 	 String area = Object.get("area").getAsString();
